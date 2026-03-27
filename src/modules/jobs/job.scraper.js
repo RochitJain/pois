@@ -1,22 +1,16 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const {extractSkills} = require('../jobs/job.service')
-url = 'https://bebee.com/in/jobs/ai-backend-engineer-coderbotics-ai-new-delhi--talent-8afd90418254?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic'
-
+const url = 'https://bebee.com/in/jobs/full-stack-developers-react-node-python-ai-zifcare-com-bengaluru--theirstack-647598189'
 
 async function companyInfo() {
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
-    const title = $('h1').text();
-    // const company_name = $('h1').text();
-    const job_description = $('p').text();
+    const title = $('h1').text().trim();
+    
+    const job_description = $('p').text().trim();
     const skills = extractSkills(job_description);
-     console.log(skills)
-    return {title, job_description,url}
+    return {title, job_description,url,skills}
 }
-
-
-
-companyInfo()
 
 module.exports = {companyInfo}

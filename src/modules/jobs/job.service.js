@@ -1,14 +1,19 @@
 const skills = [
   'python',
   'fastapi',
+  'flask',
   'docker',
-  'postgresql',
+  'kubernetes',
   'aws',
+  'postgresql',
+  'redis',
   'node',
   'react',
   'mongodb',
   'sql',
-  'ai'
+  'rest',
+  'microservices',
+  'ci/cd'
 ];
 function extractSkills(job_description) {
     const desc = job_description.toLowerCase();
