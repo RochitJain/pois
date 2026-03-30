@@ -1,8 +1,14 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const cron = require('node-cron');
+
 const {extractSkills} = require('../jobs/job.service')
 const url = 'https://bebee.com/in/jobs/full-stack-developers-react-node-python-ai-zifcare-com-bengaluru--theirstack-647598189'
 
+// cron.schedule('0 9 * * *', async () => {
+//   console.log('Running daily job fetch...');
+//   await companyInfo(); // your scraper function
+// });
 async function companyInfo() {
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);

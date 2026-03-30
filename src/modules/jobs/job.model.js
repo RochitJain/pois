@@ -36,18 +36,19 @@ async function addJobSkill(job_id, skills) {
 async function skillDemandCheck() {
   try {
     const demand = await pool.query(
-        `SELECT skill, COUNT(*) as demand
+      `SELECT skill, COUNT(*) as demand
         FROM job_skills
         GROUP BY skill
-        ORDER BY demand DESC `);
-    console.log(demand.rows)
+        ORDER BY demand DESC `,
+    );
+    console.log(demand.rows);
   } catch (err) {
     console.error(err.message);
   }
 }
 
-async function findingGaps () {
-    const result = await pool.query(`
+async function findingGaps() {
+  const result = await pool.query(`
         SELECT 
   d.skill,
   d.demand,
@@ -61,9 +62,9 @@ FROM (
 LEFT JOIN your_skills y
 ON d.skill = y.skill
 ORDER BY priority DESC;
-`)
+`);
 
-console.log(result.rows)
+  return result.rows
 }
 
-module.exports = { createJobs, addJobSkill };
+module.exports = { createJobs, addJobSkill, findingGaps, skillDemandCheck };
