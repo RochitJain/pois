@@ -2,82 +2,47 @@
 const OpenAI = require("openai");
 //const path = require('path');
 require("dotenv").config();
-//require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
-
-// console.log(process.env.OPENAI_API_KEY);
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 async function generateWeeklyReport(gapData) {
   try {
-    //     // Take top 3 skills
-    //     const topSkills = gapData.slice(0, 3);
+    if (!gapData || gapData.length === 0) {
+      return {
+        focus_skills: [],
+        plan: [],
+        warnings: ['No data available']
+      };
+    }
 
-    //     // Prepare readable input
-    //     const skillText = topSkills
-    //       .map(
-    //         (s) =>
-    //           `${s.skill} (demand: ${s.demand}, proficiency: ${s.proficiency}, gap: ${s.gap})`
-    //       )
-    //       .join('\n');
+    const topSkills = gapData.slice(0, 2);
+    const focusSkills = topSkills.map(s => s.skill);
 
-    //     const prompt = `
-    // You are a strict career strategist.
+    const skill1 = focusSkills[0];
+    const skill2 = focusSkills[1] || skill1;
 
-    // Top skill gaps:
-    // ${skillText}
-
-    // Return ONLY valid JSON. No explanation.
-
-    // Format:
-    // {
-    //   "focus_skills": ["skill1", "skill2"],
-    //   "plan": [
-    //     { "day": 1, "task": "..." },
-    //     { "day": 2, "task": "..." },
-    //     { "day": 3, "task": "..." },
-    //     { "day": 4, "task": "..." },
-    //     { "day": 5, "task": "..." },
-    //     { "day": 6, "task": "..." },
-    //     { "day": 7, "task": "..." }
-    //   ],
-    //   "warnings": ["...", "..."]
-    // }
-
-    // Rules:
-    // - Focus only on top 2–3 skills
-    // - Tasks must be practical (build, code, deploy)
-    // - No generic advice
-    // - Keep tasks short and actionable
-    // `;
-
-    //     const response = await client.chat.completions.create({
-    //       model: 'gpt-4o-mini',
-    //       messages: [
-    //         { role: 'system', content: 'You output strict JSON only.' },
-    //         { role: 'user', content: prompt },
-    //       ],
-    //       temperature: 0.3,
-    //     });
-
-    //     const text = response.choices[0].message.content;
-
-    //     // Parse JSON safely
-    //     const json = JSON.parse(text);
+    const plan = [
+      { day: 1, task: `Learn basics of ${skill1}` },
+      { day: 2, task: `Build small project using ${skill1}` },
+      { day: 3, task: `Integrate ${skill1} into your system` },
+      { day: 4, task: `Learn basics of ${skill2}` },
+      { day: 5, task: `Build feature using ${skill2}` },
+      { day: 6, task: `Combine ${skill1} + ${skill2}` },
+      { day: 7, task: `Deploy and test` },
+    ];
 
     return {
-      focus_skills: ["fastapi", "docker"],
-      plan: [
-        { day: 1, task: "Learn FastAPI basics" },
-        { day: 2, task: "Build API" },
-      ],
-      warnings: ["Do not switch tasks"],
+      focus_skills: focusSkills,
+      plan,
+      warnings: [
+        'Do not switch skills mid-week',
+        'Focus only on top gaps'
+      ]
     };
+
   } catch (err) {
-    console.error("Report Error:", err.message);
+    console.error('Report Error:', err.message);
     return null;
   }
 }
 
 module.exports = { generateWeeklyReport };
+

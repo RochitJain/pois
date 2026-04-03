@@ -9,7 +9,7 @@ async function createJobs(jobData) {
                 RETURNING *`,
       [
         jobData.title,
-        jobData.company,
+        jobData.company || 'Unknown',
         jobData.job_description,
         jobData.source_url,
       ],
@@ -20,7 +20,7 @@ async function createJobs(jobData) {
   }
 }
 
-async function addJobSkill(job_id, skills) {
+async function addJobSkills(job_id, skills) {
   try {
     for (let skill of skills) {
       await pool.query(
@@ -64,7 +64,7 @@ ON d.skill = y.skill
 ORDER BY priority DESC;
 `);
 
-  return result.rows
+  return result.rows;
 }
 
-module.exports = { createJobs, addJobSkill, findingGaps, skillDemandCheck };
+module.exports = { createJobs, addJobSkills, findingGaps, skillDemandCheck };

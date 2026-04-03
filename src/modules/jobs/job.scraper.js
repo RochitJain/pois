@@ -1,22 +1,48 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const cron = require('node-cron');
 
 const {extractSkills} = require('../jobs/job.service')
-const url = 'https://bebee.com/in/jobs/full-stack-developers-react-node-python-ai-zifcare-com-bengaluru--theirstack-647598189'
+const jobUrls = [
+  'https://bebee.com/in/jobs/nodejs-developer-site2gym-hyderabad--theirstack-654090549',
+  'https://bebee.com/in/jobs/business-development-manager-ai-ml-computer-vision-kollinear-consultants--m5jex1ids0fyn8w79urk3qalog4p6cb2',
+  'https://bebee.com/in/jobs/director-of-artificial-intelligence-ai-strategy-kroll-inc-mumbai-maharashtra--theirstack-655269333'
+];
 
-// cron.schedule('0 9 * * *', async () => {
-//   console.log('Running daily job fetch...');
-//   await companyInfo(); // your scraper function
-// });
-async function companyInfo() {
+async function scrapeJob(url) {
+  try {
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
-    const title = $('h1').text().trim();
-    
-    const job_description = $('p').text().trim();
-    const skills = extractSkills(job_description);
-    return {title, job_description,url,skills}
+
+    const title = $('h1').first().text().trim();
+
+    const description = $('body').text().trim(); // simple fallback
+    const skills = extractSkills(description);
+    console.log(`Scraped job: ${title}`);
+    console.log(`Extracted skills: ${skills}`);
+    return {
+      title,
+      company: 'Unknown',
+      job_description: description,
+      url,
+      skills
+    };
+
+  } catch (err) {
+    console.error('Scrape error:', err.message);
+    return null;
+  }
 }
 
-module.exports = {companyInfo}
+async function getAllJobs() {
+  const jobs = [];
+
+  for (let url of jobUrls) {
+    const job = await scrapeJob(url);
+    if (job) jobs.push(job);
+  }
+
+  console.log('Jobs found:', jobs.length);
+  return jobs;
+}
+
+module.exports = { getAllJobs };
