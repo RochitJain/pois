@@ -18,13 +18,17 @@ const skills = [
   "ML",
 ];
 function extractSkills(job_description) {
-  const desc = job_description.toLowerCase();
+  try {
+    const desc = job_description.toLowerCase();
 
-  const matchedSkills = [];
-  for (let skill of skills) {
-    if (desc.includes(skill)) matchedSkills.push(skill);
+    const matchedSkills = [];
+    for (let skill of skills) {
+      if (desc.includes(skill)) matchedSkills.push(skill);
+    }
+    return matchedSkills;
+  } catch (err) {
+    console.log(err.message);
   }
-  return matchedSkills;
 }
 
 module.exports = { extractSkills };

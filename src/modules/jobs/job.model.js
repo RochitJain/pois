@@ -9,7 +9,7 @@ async function createJobs(jobData) {
                 RETURNING *`,
       [
         jobData.title,
-        jobData.company || 'Unknown',
+        jobData.company || "Unknown",
         jobData.job_description,
         jobData.source_url,
       ],
@@ -29,7 +29,7 @@ async function addJobSkills(job_id, skills) {
       );
     }
   } catch (err) {
-    console.log(err.message);
+    console.error(err.message);
   }
 }
 
@@ -41,14 +41,14 @@ async function skillDemandCheck() {
         GROUP BY skill
         ORDER BY demand DESC `,
     );
-    console.log(demand.rows);
   } catch (err) {
     console.error(err.message);
   }
 }
 
 async function findingGaps() {
-  const result = await pool.query(`
+  try {
+    const result = await pool.query(`
         SELECT 
   d.skill,
   d.demand,
@@ -64,7 +64,10 @@ ON d.skill = y.skill
 ORDER BY priority DESC;
 `);
 
-  return result.rows;
+    return result.rows;
+  } catch (err) {
+    console.error(err.message);
+  }
 }
 
 module.exports = { createJobs, addJobSkills, findingGaps, skillDemandCheck };

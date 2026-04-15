@@ -8,20 +8,23 @@ const { saveReport } = require("./modules/reports/report.model");
 const { generateWeeklyReport } = require("./modules/reports/report.service");
 const cron = require("node-cron");
 async function runPipeline() {
-  const jobs = await getAllJobs();
+  try {
+    const jobs = await getAllJobs();
 
-  for (let jobData of jobs) {
-  const job = await createJobs(jobData);
+    for (let jobData of jobs) {
+      const job = await createJobs(jobData);
 
-  if (job && job.id) {
-    await addJobSkills(job.id, jobData.skills);
+      if (job && job.id) {
+        await addJobSkills(job.id, jobData.skills);
+      }
+    }
+    const gapData = await findingGaps();
+    const report = await generateWeeklyReport(gapData);
+
+    await saveReport(report);
+  } catch (err) {
+    console.log(err.message);
   }
 }
-  const gapData = await findingGaps();
-  const report = await generateWeeklyReport(gapData);
 
-  await saveReport(report);
-}
-
-
-  runPipeline();
+runPipeline();

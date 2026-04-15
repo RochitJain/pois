@@ -5,7 +5,11 @@ const { getLatestReport } = require("./report.model");
 router.get("/report", async (req, res) => {
   try {
     const report = await getLatestReport();
-    res.json(report);
+    if(!report) {
+      res.json({ error: "No report found" });
+    } else{
+      res.json(report);
+    }
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch report" });
   }
